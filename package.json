@@ -1,0 +1,28 @@
+{
+  "name": "react-native-sqlite-helper-pro",
+  "version": "1.0.0",
+  "description": "a helper for react-native-sqlite-storage, you can get rid of raw sql with react-native-sqlite-helper-pro now!",
+  "main": "index.js",
+  "directories": {
+    "example": "example"
+  },
+  "scripts": {
+    "test": "niki"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NikiLee2016/react-native-sqlite-helper-pro.git"
+  },
+  "keywords": [
+    "sqlite",
+    "react-native-sqlite-storage",
+    "storage",
+    "react-native"
+  ],
+  "author": "Niki",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/NikiLee2016/react-native-sqlite-helper-pro/issues"
+  },
+  "homepage": "https://github.com/NikiLee2016/react-native-sqlite-helper-pro#readme"
+}
