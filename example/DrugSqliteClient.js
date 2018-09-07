@@ -15,6 +15,7 @@ export const commonSqliteConfig = {
     dbVersion: '1.0',  //数据库版本号, 例如1.0
     dbDisplayName: 'RainonApp',  //例如TestSqlite
 };
+
 export default class DrugSqliteClient extends BaseSqliteClient{
     constructor() {
         super({
@@ -34,3 +35,4 @@ export default class DrugSqliteClient extends BaseSqliteClient{
     }
 
 }
+

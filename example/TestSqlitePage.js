@@ -1,13 +1,3 @@
-# react-native-sqlite-helper-pro
-使用前请先确保添加了[react-native-sqlite-storage](https://github.com/andpor/react-native-sqlite-storage)库并进行了link, 最好对sql语句有一定的了解, 了解基本的sql增删改查语句, 感兴趣的话建议看看[W3C SQL教程](http://www.w3school.com.cn/sql/index.asp).
-## Installation
-
-    yarn add react-native-sqlite-helper-pro
-
-## How to use
-**下面是代码例子**
-
-```
 /**
  * Created by Niki on 9/8/18 12:59 AM.
  * Email: m13296644326@163.com
@@ -148,4 +138,3 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
     }
 });
-```
