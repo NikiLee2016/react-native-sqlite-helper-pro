@@ -151,4 +151,5 @@ const styles = StyleSheet.create({
 ```
 ## 参数说明
 **参数较多, 写表格比较繁琐, 我就放一张注释的截图吧**
+
 ![参数说明](https://github.com/NikiLee2016/react-native-sqlite-helper-pro/blob/master/capture/params-of-constructor.jpg?raw=true)
