@@ -183,5 +183,5 @@ const styles = StyleSheet.create({
 | _deleteTable   | 删除table                | 一般仅供测试使用                                                              |
 
 ## 建议
- **为了更保证代码的可维护性和稳定性, 建议定义一个YourSqliteClient 继承 BaseSqliteClient, 然后在YourSqliteClient中书写业务代码**<br/>
+ **为了保证代码的可维护性和稳定性, 建议定义一个YourSqliteClient 继承 BaseSqliteClient, 然后在YourSqliteClient中书写业务代码**<br/>
  **记得点赞哦~**
