@@ -119,6 +119,12 @@ export default class TestSqlitePage extends React.PureComponent {
         )
     }
 
+    //千万别忘了close
+    componentWillUnmount(){
+        this.baseSqliteClient && this.baseSqliteClient,close();
+    }
+
+
 }
 
 const BlueButton = (p) => {

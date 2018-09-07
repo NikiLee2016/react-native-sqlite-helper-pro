@@ -129,6 +129,11 @@ export default class TestSqlitePage extends React.PureComponent {
         )
     }
 
+	//千万别忘了close
+    componentWillUnmount(){
+        this.baseSqliteClient && this.baseSqliteClient,close();
+    }
+
 }
 
 const BlueButton = (p) => {
@@ -150,10 +155,10 @@ const styles = StyleSheet.create({
 });
 ```
 ## 参数说明
-**参数较多, 写表格比较繁琐, 我就放一张注释的截图吧**
+**构造方法传入参数说明**
 
-| 参数名          | 默认值 | 参数说明                                                                                                                                              |
-| :------------------ | :-----: | :--------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 参数名          | 默认值				 | 参数说明                                                                                                                                              |
+| :------------------ | :----------------------: | :--------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | dbName             | -      | 数据库名字, 以.db为后缀, 例如tet.db                                                                                                            |
 | dbVersion          | 1.0    | 数据库版本号                                                                                                                                        |
 | dbDisplayName      |        | 数据库展示名称, 例如TestSqlite                                                                                                                   |
@@ -161,3 +166,22 @@ const styles = StyleSheet.create({
 | tableName          | -      | 数据库表的表名                                                                                                                                     |
 | tableCreateCommand | -      | 表创建命令; 框架已自动指定id主键, 使用者不要重复指定; 注意: 如果某字段是你的去重依据, 那么千万注意要将该字段设置为unique, 否则insertOrUpdate方法无法使用! |
 | debugMode          |        | 是否开启debug模式, 默认开启; 如果开启, 会在console打印一些日志                                                                      |
+
+**方法说明**
+
+| 方法名      | 参数                     | 方法说明                                                                          |
+| -------------- | -------------------------- | ------------------------------------------------------------------------------------- |
+| open           | -                          | 创建或打开书库, 返回数据库代理对象                                    |
+| close          | -                          | 关闭数据库通道, 解决性能                                                   |
+| createTable    | -                          | 创建表, if not exist                                                               |
+| insert         | params                     | 插入一条数据                                                                    |
+| update         | params, where              | 修改一条数据                                                                    |
+| insertOrUpdate | params, where              | 插入或更新数据; 先尝试插入, 如果有重复数据则更新数据; 注意去重标志字段需要设为unique. |
+| query          | where                      | 按照条件数据, 可为空                                                         |
+| executeRawSql  | sql, paramsArray: 参数数组 | 执行自定义的sql语句                                                           |
+| deleteData     | where                      | 按照条件删除数据                                                              |
+| _deleteTable   | 删除table                | 一般仅供测试使用                                                              |
+
+## 建议
+ **为了更保证代码的可维护性和稳定性, 建议定义一个YourSqliteClient 继承 BaseSqliteClient, 然后在YourSqliteClient中书写业务代码**<br/>
+ **记得点赞哦~**
