@@ -152,4 +152,12 @@ const styles = StyleSheet.create({
 ## 参数说明
 **参数较多, 写表格比较繁琐, 我就放一张注释的截图吧**
 
-![参数说明](https://github.com/NikiLee2016/react-native-sqlite-helper-pro/blob/master/capture/params-of-constructor.jpg?raw=true)
+| 参数名          | 默认值 | 参数说明                                                                                                                                              |
+| :------------------ | :-----: | :--------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| dbName             | -      | 数据库名字, 以.db为后缀, 例如tet.db                                                                                                            |
+| dbVersion          | 1.0    | 数据库版本号                                                                                                                                        |
+| dbDisplayName      |        | 数据库展示名称, 例如TestSqlite                                                                                                                   |
+| dbSize             | 1     | 数据库size, 默认为-1, 表示无限制                                                                                                               |
+| tableName          | -      | 数据库表的表名                                                                                                                                     |
+| tableCreateCommand | -      | 表创建命令; 框架已自动指定id主键, 使用者不要重复指定; 注意: 如果某字段是你的去重依据, 那么千万注意要将该字段设置为unique, 否则insertOrUpdate方法无法使用! |
+| debugMode          |        | 是否开启debug模式, 默认开启; 如果开启, 会在console打印一些日志                                                                      |
