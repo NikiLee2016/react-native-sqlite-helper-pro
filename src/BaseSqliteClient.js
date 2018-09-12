@@ -26,13 +26,13 @@ const getInsertPartByObj = (params) => {
     }
 };
 
-const getUpdatePartByObj = (params) => {
+const getUpdatePartByObj = (params, split = ',') => {
     let keys = Object.keys(params);
     let sqlPart = keys.reduce((pre, now, index) => {
         if (index === 0) {
             return pre + `${now} = ?`;
         }
-        return pre + `, ${now} = ?`;
+        return pre + ` ${split} ${now} = ?`;
     }, '');
     return {
         sqlPart,
@@ -60,24 +60,26 @@ export default class BaseSqliteClient {
 
     /**
      *
-     * @param dbName                数据库名字, 以.db为后缀, 例如tet.db
-     * @param dbVersion             数据库版本号, 例如1.0
-     * @param dbDisplayName         例如TestSqlite
-     * @param dbSize                数据库size, 默认为-1, 表示无限制
-     * @param tableName             表名字
+     * @param dbName    数据库名字, 以.db为后缀, 例如tet.db
+     * @param dbVersion 数据库版本号, 例如1.0
+     * @param dbDisplayName 例如TestSqlite
+     * @param dbSize        数据库size, 默认为-1, 表示无限制
+     * @param tableName     表名字
      * @param tableCreateCommand    表创建命令, 框架已自动指定id主键, 使用者不要重复指定
      *                              注意: 如果某字段是你的去重依据, 那么千万注意要将该字段设置为unique, 否则insertOrUpdate方法无法使用!
-     * @param debugMode             是否开启debug模式, 默认开启; 如果开启, 会在console打印一些日志
+     * @param debugMode     是否开启debug模式, 默认开启; 如果开启, 会在console打印一些日志
      *
      * 注意: 如果某字段是你的去重复依据, 那么千万注意要将该字段设置为unique, 否则insertOrUpdate方法无法使用!
+     * @param getFixedParams 获取增删改查的固定参数
      */
-    constructor({dbName, dbVersion, dbDisplayName, dbSize = -1, tableName, tableCreateCommand, debugMode = true}) {
+    constructor({dbName, dbVersion, dbDisplayName, dbSize = -1, tableName, tableCreateCommand, debugMode = true, getFixedParams = {}}) {
         this.dbName = dbName;
         this.dbVersion = dbVersion;
         this.dbDisplayName = dbDisplayName;
         this.dbSize = dbSize;
         this.tableName = tableName;
         this.tableCreateCommand = tableCreateCommand;
+        this.getFixedParams = getFixedParams;
         SQLiteStorage.DEBUG(debugMode);
         this.dataBase = null;
     }
@@ -108,7 +110,7 @@ export default class BaseSqliteClient {
                     this.tableCreateCommand
                     + ')',
                     [],
-                    () => this.logSuccess('create table ' + this.tableName),
+                    () => logSuccess('create table ' + this.tableName),
                     (err) => this.logError('create table ' + this.tableName, err)
                 );
             },
@@ -117,6 +119,7 @@ export default class BaseSqliteClient {
     };
 
     insert = params => {
+        Object.assign(params, this.getFixedParams());
         const {sqlPart, sqlPart2, paramsPart} = getInsertPartByObj(params);
         //先update, 如果row小于0, 那么insert
         if (!this.dataBase) {
@@ -143,9 +146,10 @@ export default class BaseSqliteClient {
         });
     };
 
-    update = (params, where) => {
+    update = (params, where = {}) => {
+        Object.assign(where,  this.getFixedParams());
         const {sqlPart, paramsPart} = getUpdatePartByObj(params);
-        const {sqlPart: sqlPartWhere, paramsPart: paramsPartWhere} = getUpdatePartByObj(where);
+        const {sqlPart: sqlPartWhere, paramsPart: paramsPartWhere} = getUpdatePartByObj(where, 'AND');
         return new Promise((res, rej) => {
             this.dataBase.transaction(tx => {
                     let data = tx.executeSql(
@@ -161,7 +165,10 @@ export default class BaseSqliteClient {
         })
     };
 
-    insertOrUpdate = (params, where) => {
+    insertOrUpdate = (params, where = {}) => {
+        //StringUtil.translateObj2String(this.getFixedParams());
+        Object.assign(where,  this.getFixedParams());
+        Object.assign(params,  this.getFixedParams());
         return this.insert(params)
             .then(rowsAffected => {
                 //如果顺利插入
@@ -175,11 +182,12 @@ export default class BaseSqliteClient {
             });
     };
 
-    query = where => {
+    query = (where = {}) => {
+        Object.assign(where,  this.getFixedParams());
         let wherePart = '';
         let whereParams = [];
         if (where && JSON.stringify(where) !== '{}') {
-            const {sqlPart, paramsPart} = getUpdatePartByObj(where);
+            const {sqlPart, paramsPart} = getUpdatePartByObj(where, 'AND');
             wherePart = 'WHERE ' + sqlPart;
             whereParams = paramsPart;
         }
@@ -223,7 +231,8 @@ export default class BaseSqliteClient {
     };
 
     deleteData = (where) => {
-        const {sqlPart, paramsPart} = getUpdatePartByObj(where);
+        Object.assign(where,  this.getFixedParams());
+        const {sqlPart, paramsPart} = getUpdatePartByObj(where, 'AND');
         return new Promise((res, rej) => {
             this.dataBase.transaction(tx => {
                     tx.executeSql(
@@ -241,7 +250,7 @@ export default class BaseSqliteClient {
     _deleteTable = (tableName) => {
         this.dataBase.transaction(tx => {
                 tx.executeSql(
-                     `drop table ${tableName}`,
+                    `drop table ${tableName}`,
                     [],
                     ...getCallbacks('delete table', this.tableName),
                 )
