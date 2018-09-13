@@ -1,6 +1,6 @@
 {
   "name": "react-native-sqlite-helper-pro",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "a helper for react-native-sqlite-storage, you can get rid of raw sql with react-native-sqlite-helper-pro now!",
   "main": "index.js",
   "directories": {

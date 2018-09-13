@@ -95,6 +95,16 @@ export default class BaseSqliteClient {
         return this.dataBase;
     };
 
+
+    /**
+     * 有时候执行完了一段Sql之后, 如果立马close, 会报错. 所以有些场合需要进行safeClose, 做延时处理
+     */
+    safeClose = () => {
+        setTimeout(() => {
+            this.close();
+        }, 1000);
+    };
+
     close = () => {
         this.dataBase && this.dataBase.close();
         this.dataBase = null;
@@ -147,7 +157,7 @@ export default class BaseSqliteClient {
     };
 
     update = (params, where = {}) => {
-        Object.assign(where,  this.getFixedParams());
+        Object.assign(where, this.getFixedParams());
         const {sqlPart, paramsPart} = getUpdatePartByObj(params);
         const {sqlPart: sqlPartWhere, paramsPart: paramsPartWhere} = getUpdatePartByObj(where, 'AND');
         return new Promise((res, rej) => {
@@ -167,8 +177,8 @@ export default class BaseSqliteClient {
 
     insertOrUpdate = (params, where = {}) => {
         //StringUtil.translateObj2String(this.getFixedParams());
-        Object.assign(where,  this.getFixedParams());
-        Object.assign(params,  this.getFixedParams());
+        Object.assign(where, this.getFixedParams());
+        Object.assign(params, this.getFixedParams());
         return this.insert(params)
             .then(rowsAffected => {
                 //如果顺利插入
@@ -182,8 +192,28 @@ export default class BaseSqliteClient {
             });
     };
 
+    /**
+     * 通过query的结果来判断是否重复, 效率稍慢, 但是去重字段可以不用设置为unique
+     * @param params
+     * @param where
+     * @returns {Promise.<TResult>|*|Promise.<*>|axios.Promise}
+     */
+    insertOrUpdateByQuery = (params, where = {}) => {
+        Object.assign(where, this.getFixedParams());
+        Object.assign(params, this.getFixedParams());
+        return this.query(where)
+            .then((data) => {
+                if (data && data.length > 0) {
+                    return this.update(params, where);
+                } else {
+                    return this.insert(params);
+                }
+            });
+    };
+
+
     query = (where = {}) => {
-        Object.assign(where,  this.getFixedParams());
+        Object.assign(where, this.getFixedParams());
         let wherePart = '';
         let whereParams = [];
         if (where && JSON.stringify(where) !== '{}') {
@@ -213,7 +243,7 @@ export default class BaseSqliteClient {
         });
     };
 
-    executeRawSql = (sqlStr: string, params?: Array )=> {
+    executeRawSql = (sqlStr: string, params?: Array) => {
         return new Promise((res, rej) => {
             this.dataBase.transaction(tx => {
                     tx.executeSql(
@@ -231,7 +261,7 @@ export default class BaseSqliteClient {
     };
 
     deleteData = (where) => {
-        Object.assign(where,  this.getFixedParams());
+        Object.assign(where, this.getFixedParams());
         const {sqlPart, paramsPart} = getUpdatePartByObj(where, 'AND');
         return new Promise((res, rej) => {
             this.dataBase.transaction(tx => {
